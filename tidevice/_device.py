@@ -615,7 +615,7 @@ class BaseDevice():
         except MuxServiceError:
             return False
 
-    def mount_developer_image(self):
+    def mount_developer_image(self, img_dir: str):
         """
         Raises:
             MuxError
@@ -632,6 +632,8 @@ class BaseDevice():
             return
 
         with self._request_developer_image_dir() as _dir: #, signature_path:
+            if img_dir:
+                _dir = img_dir
             image_path = os.path.join(_dir, "DeveloperDiskImage.dmg")
             signature_path = image_path + ".signature"
             self.imagemounter.mount(image_path, signature_path)

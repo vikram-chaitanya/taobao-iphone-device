@@ -93,6 +93,7 @@ def cmd_list(args: argparse.Namespace):
 def cmd_device_info(args: argparse.Namespace):
     d = _udid2device(args.udid)
     value = d.get_value(no_session=args.simple, key=args.key, domain=args.domain)
+    value['ProductType'] = MODELS.get(value['ProductType'])
     if args.json:
         def _bytes_hook(obj):
             if isinstance(obj, bytes):
@@ -281,7 +282,7 @@ def cmd_system_info(args):
 
 def cmd_developer(args: argparse.Namespace):
     d = _udid2device(args.udid)
-    d.mount_developer_image()
+    d.mount_developer_image(args.img_dir)
     return
 
 
@@ -418,6 +419,10 @@ _commands = [
          help="launch app with bundle_id"),
     dict(action=cmd_developer,
          command="developer",
+         flags=[
+             dict(args=['img_dir'],
+                  help='developer image directory'),
+         ],
          help="mount developer image to device"),
     dict(action=cmd_kill,
          command="kill",
