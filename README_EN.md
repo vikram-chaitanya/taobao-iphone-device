@@ -111,6 +111,49 @@ c = wda.Client("http://localhost:8200")
 print(c.info)
 ```
 
+### Run UITests
+Demo <https://github.com/FeiHuang93/XCTest-Demo>
+
+- `philhuang.testXCTestUITests.xctrunner` is the test to launch
+- `philhuang.testXCTest` is the app to test
+ 
+ ```bash
+$ tidevice xctest --bundle-id philhuang.testXCTestUITests.xctrunner --target-bundle-id philhuang.testXCTest
+# ... ignore some not important part ...
+[I 210301 15:37:07 _device:887] logProcess: 2021-03-01 15:37:07.924620+0800 testXCTestUITests-Runner[81644:13765443] Running tests...
+[I 210301 15:37:07 _device:984] Test runner ready detected
+[I 210301 15:37:07 _device:976] Start execute test plan with IDE version: 29
+[I 210301 15:37:07 _device:887] logProcess: Test Suite 'All tests' started at 2021-03-01 15:37:08.009
+    XCTestOutputBarrier
+[I 210301 15:37:07 _device:887] logProcess: Test Suite 'testXCTestUITests.xctest' started at 2021-03-01 15:37:08.010
+    XCTestOutputBarrierTest Suite 'testXCTestUITests' started at 2021-03-01 15:37:08.010
+[I 210301 15:37:07 _device:887] logProcess: XCTestOutputBarrier
+[I 210301 15:37:07 _device:887] logProcess: Test Case '-[testXCTestUITests testExample]' started.
+    XCTestOutputBarrier
+[I 210301 15:37:07 _device:887] logProcess:     t =     0.00s Start Test at 2021-03-01 15:37:08.010
+[I 210301 15:37:07 _device:887] logProcess:     t =     0.00s Set Up
+[I 210301 15:37:07 _device:887] logProcess: 2021-03-01 15:37:08.010828+0800 testXCTestUITests-Runner[81644:13765443] testExample start
+[I 210301 15:37:07 _device:887] logProcess:     t =     0.00s     Open philhuang.testXCTest
+[I 210301 15:37:07 _device:887] logProcess:     t =     0.00s         Launch philhuang.testXCTest
+[I 210301 15:37:08 _device:887] logProcess:     t =     0.04s             Wait for accessibility to load
+[I 210301 15:37:08 _device:887] logProcess:     t =     0.04s             Setting up automation session
+[I 210301 15:37:08 _device:887] logProcess:     t =     0.10s             Wait for philhuang.testXCTest to idle
+[I 210301 15:37:09 _device:887] logProcess:     t =     1.13s Tear Down
+[I 210301 15:37:09 _device:887] logProcess: Test Case '-[testXCTestUITests testExample]' passed (1.337 seconds).
+[I 210301 15:37:09 _device:887] logProcess: XCTestOutputBarrier
+[I 210301 15:37:09 _device:887] logProcess: Test Suite 'testXCTestUITests' passed at 2021-03-01 15:37:09.349.
+    	 Executed 1 test, with 0 failures (0 unexpected) in 1.337 (1.339) seconds
+    XCTestOutputBarrier
+[I 210301 15:37:09 _device:887] logProcess: Test Suite 'testXCTestUITests.xctest' passed at 2021-03-01 15:37:09.350.
+    	 Executed 1 test, with 0 failures (0 unexpected) in 1.337 (1.340) seconds
+[I 210301 15:37:09 _device:887] logProcess: XCTestOutputBarrier
+[I 210301 15:37:09 _device:887] logProcess: Test Suite 'All tests' passed at 2021-03-01 15:37:09.352.
+    	 Executed 1 test, with 0 failures (0 unexpected) in 1.337 (1.343) seconds
+    XCTestOutputBarrier
+[I 210301 15:37:09 _device:887] logProcess: XCTestOutputBarrier
+[I 210301 15:37:09 _device:1059] xctrunner quited
+```
+
 ### Mount DeveloperDiskImage
 ```bash
 # Find in /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/DeviceSupport/
@@ -120,6 +163,57 @@ $ tidevice developer
 [I 210127 11:37:52 _imagemounter:81] Pushing DeveloperDiskImage.dmg
 [I 210127 11:37:52 _imagemounter:94] Push complete
 [I 210127 11:37:53 _device:589] DeveloperImage mounted successfully
+```
+
+### Check device info
+```bash
+$ tidevice info
+
+# check device power info
+$ tidevice info --domain com.apple.mobile.battery --json
+{
+    "BatteryCurrentCapacity": 53,
+    "BatteryIsCharging": true,
+    "ExternalChargeCapable": true,
+    "ExternalConnected": true,
+    "FullyCharged": false,
+    "GasGaugeCapability": true,
+    "HasBattery": true
+}
+```
+
+Known domains are:
+
+```text
+com.apple.disk_usage
+com.apple.disk_usage.factory
+com.apple.mobile.battery
+com.apple.iqagent
+com.apple.purplebuddy
+com.apple.PurpleBuddy
+com.apple.mobile.chaperone
+com.apple.mobile.third_party_termination
+com.apple.mobile.lockdownd
+com.apple.mobile.lockdown_cache
+com.apple.xcode.developerdomain
+com.apple.international
+com.apple.mobile.data_sync
+com.apple.mobile.tethered_sync
+com.apple.mobile.mobile_application_usage
+com.apple.mobile.backup
+com.apple.mobile.nikita
+com.apple.mobile.restriction
+com.apple.mobile.user_preferences
+com.apple.mobile.sync_data_class
+com.apple.mobile.software_behavior
+com.apple.mobile.iTunes.SQLMusicLibraryPostProcessCommands
+com.apple.mobile.iTunes.accessories
+com.apple.mobile.internal
+com.apple.mobile.wireless_lockdown
+com.apple.fairplay
+com.apple.iTunes
+com.apple.mobile.iTunes.store
+com.apple.mobile.iTunes
 ```
 
 ### Other

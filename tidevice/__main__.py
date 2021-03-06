@@ -87,29 +87,29 @@ def cmd_list(args: argparse.Namespace):
             print(udid, name)
         result.append(dict(udid=udid, name=name))
     if args.json:
-        print(json.dumps(result, indent=4))
+        print(json.dumps(result, indent=4, ensure_ascii=False))
 
 
 def cmd_device_info(args: argparse.Namespace):
     d = _udid2device(args.udid)
-    dinfo = d.device_info()
+    value = d.get_value(no_session=args.simple, key=args.key, domain=args.domain)
     if args.json:
-
         def _bytes_hook(obj):
             if isinstance(obj, bytes):
                 return base64.b64encode(obj).decode()
-
-        print(json.dumps(dinfo, indent=4, default=_bytes_hook))
+        print(json.dumps(value, indent=4, default=_bytes_hook))
+    elif args.key or args.domain:
+        pprint(value)
     else:
-        print("{:17s} {}".format("ProductName:",
-                                 MODELS.get(dinfo['ProductType'])))
+        print("{:17s} {}".format("MarketName:",
+                                 MODELS.get(value['ProductType'])))
         for attr in ('DeviceName', 'ProductVersion', 'ProductType',
                      'ModelNumber', 'SerialNumber', 'PhoneNumber',
                      'CPUArchitecture', 'ProductName', 'ProtocolVersion',
                      'RegionInfo', 'TimeIntervalSince1970', 'TimeZone',
                      'UniqueDeviceID', 'WiFiAddress', 'BluetoothAddress',
                      'BasebandVersion'):
-            print("{:17s} {}".format(attr + ":", dinfo.get(attr)))
+            print("{:17s} {}".format(attr + ":", value.get(attr)))
 
 
 def cmd_version(args: argparse.Namespace):
@@ -207,7 +207,10 @@ def cmd_xctest(args: argparse.Namespace):
         env[key] = val
     if env:
         logger.info("Launch env: %s", env)
-    d.xctest(args.bundle_id, logger=setup_logger(level=logging.INFO), env=env)
+    d.xctest(args.bundle_id,
+             target_bundle_id=args.target_bundle_id,
+             logger=setup_logger(level=logging.INFO),
+             env=env)
 
 
 def cmd_screenshot(args: argparse.Namespace):
@@ -290,7 +293,7 @@ def cmd_relay(args: argparse.Namespace):
 def cmd_wdaproxy(args: argparse.Namespace):
     """ start xctest and relay """
     d = _udid2device(args.udid)
-    
+
     serv = WDAService(d, args.bundle_id)
     p = None
     if args.port:
@@ -299,7 +302,7 @@ def cmd_wdaproxy(args: argparse.Namespace):
             str(args.port), '8100'
         ]
         p = subprocess.Popen(cmds, stdout=sys.stdout, stderr=sys.stderr)
-    
+
     try:
         serv.start()
         while serv._service.running:
@@ -312,7 +315,7 @@ def cmd_wdaproxy(args: argparse.Namespace):
 def cmd_syslog(args: argparse.Namespace):
     d = _udid2device(args.udid)
     s = d.start_service("com.apple.syslog_relay")
-        # print("SS")
+    # print("SS")
     try:
         while True:
             text = s.recv().decode('utf-8')
@@ -351,7 +354,10 @@ _commands = [
          flags=[
              dict(args=['--json'],
                   action='store_true',
-                  help="output as json format")
+                  help="output as json format"),
+            dict(args=['-s', '--simple'], action='store_true', help='use a simple connection to avoid auto-pairing with the device'),
+            dict(args=['-k', '--key'], type=str, help='only query specified KEY'),
+            dict(args=['--domain'], help='set domain of query to NAME.'),
          ],
          help="show device info"),
     dict(action=cmd_system_info,
@@ -382,9 +388,11 @@ _commands = [
     dict(action=cmd_xctest,
          command="xctest",
          flags=[
-             dict(args=['-B', '--bundle_id'],
+             dict(args=['-B', '--bundle_id', '--bundle-id'],
                   default="com.facebook.*.xctrunner",
-                  help="test application bundle id"),
+                  help="bundle id of the test to launch"),
+             dict(args=['--target-bundle-id'],
+                  help='bundle id of the target app [optional]'),
              dict(args=['-I', '--install-wda'],
                   action='store_true',
                   help='install webdriveragent app'),
