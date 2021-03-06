@@ -17,5 +17,6 @@ packaging
 pyOpenSSL #>=20.0.1
 pyasn1 #>=0.4.8
 
+setuptools
 tornado
 simple_tornado
