@@ -93,8 +93,15 @@ def cmd_list(args: argparse.Namespace):
 def cmd_device_info(args: argparse.Namespace):
     d = _udid2device(args.udid)
     value = d.get_value(no_session=args.simple, key=args.key, domain=args.domain)
-    value['ProductType'] = MODELS.get(value['ProductType'])
     if args.json:
+        value['MarketName'] = MODELS.get(value['ProductType'])
+        value['ProductType'] = MODELS.get(value['ProductType'])
+        screen_width = d.get_value(no_session=args.simple, key="ScreenWidth", domain="com.apple.mobile.iTunes")
+        screen_height = d.get_value(no_session=args.simple, key="ScreenHeight", domain="com.apple.mobile.iTunes")
+        scale_factor = d.get_value(no_session=args.simple, key="ScreenScaleFactor", domain="com.apple.mobile.iTunes")
+        value['ScreenWidth'] = screen_width
+        value['ScreenHeight'] = screen_height
+        value['ScreenScaleFactor'] = scale_factor 
         def _bytes_hook(obj):
             if isinstance(obj, bytes):
                 return base64.b64encode(obj).decode()
