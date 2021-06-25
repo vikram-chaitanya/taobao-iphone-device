@@ -631,13 +631,19 @@ class BaseDevice():
             logger.info("DeviceLocked, but DeveloperImage already mounted")
             return
 
-        with self._request_developer_image_dir() as _dir: #, signature_path:
-            if img_dir:
-                _dir = img_dir
-            image_path = os.path.join(_dir, "DeveloperDiskImage.dmg")
+        if img_dir:
+            logger.info("Using the provided img dir - %s", img_dir)
+            image_path = os.path.join(img_dir, "DeveloperDiskImage.dmg")
             signature_path = image_path + ".signature"
             self.imagemounter.mount(image_path, signature_path)
             logger.info("DeveloperImage mounted successfully")
+        else:
+            logger.info("img dir not provided. Using external sources")
+            with self._request_developer_image_dir() as _dir: #, signature_path:
+                image_path = os.path.join(_dir, "DeveloperDiskImage.dmg")
+                signature_path = image_path + ".signature"
+                self.imagemounter.mount(image_path, signature_path)
+                logger.info("DeveloperImage mounted successfully")
 
     @property
     def sync(self) -> Sync:
